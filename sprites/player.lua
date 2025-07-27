@@ -9,6 +9,9 @@ function player:load()
     self.rotation = 0
     self.mouse_x = 0
     self.mouse_y = 0
+    self.dash_speed = 0
+    self.dash_damping = 40000
+    self.dash_vector = {}
 end
 
 function player:update(dt)
@@ -18,14 +21,27 @@ function player:update(dt)
     local x = self.position.x - self.mouse_x
     local y = self.position.y - self.mouse_y
 
-    if #objects.move_vectors == 0 then
-        table.insert(objects.move_vectors, { x = x, y = y, speed = 0 })
-    else
-        local last_vector = objects.move_vectors[#objects.move_vectors]
+    if self.dash_speed <= 800 then
+        self.dash_vector.x = x
+        self.dash_vector.y = y
+        normalize_vector(self.dash_vector)
+    end
 
-        if last_vector.x ~= x or last_vector.y ~= y then
-            table.insert(objects.move_vectors, { x = x, y = y, speed = 0 })
+    if self.dash_speed <= 800 then
+        if #objects.move_vectors == 0 then
+            table.insert(objects.move_vectors, { x = x, y = y, speed = 0, damping = 300 })
+        else
+            local last_vector = objects.move_vectors[#objects.move_vectors]
+            if last_vector.x ~= x or last_vector.y ~= y then
+                table.insert(objects.move_vectors, { x = x, y = y, speed = 0, damping = 300 })
+            end
         end
+    end
+
+
+    if self.dash_speed > 800 then
+        self.dash_speed = self.dash_speed - self.dash_damping * dt
+        self.dash_damping = self.dash_damping - 1000 * dt
     end
 end
 
