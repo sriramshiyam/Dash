@@ -48,21 +48,14 @@ end
 
 function love.keypressed(key)
     if key == "space" and player.dash_speed <= 800 then
-        player.dash_speed = 7000
+        player.dash_speed = 6000
         player.dash_damping = 40000
 
-        for i = #objects.move_vectors, 1, -1 do
-            local move_vector = objects.move_vectors[i]
-            if move_vector.x ~= player.dash_vector.x or move_vector.y ~= player.dash_vector.y then
-                table.remove(objects.move_vectors, i)
-            end
-        end
+        objects.move_vectors = {}
 
-        if #objects.move_vectors == 0 then
-            for i = 1, 10 do
-                local vector = { x = player.dash_vector.x, y = player.dash_vector.y, speed = 50, damping = 300 }
-                table.insert(objects.move_vectors, vector)
-            end
+        for i = 1, 15 do
+            local vector = { x = player.dash_vector.x, y = player.dash_vector.y, speed = 25, damping = 300 }
+            table.insert(objects.move_vectors, vector)
         end
     end
 end
