@@ -1,19 +1,17 @@
+require "utils"
 require "sprites.player"
 require "sprites.object"
+require "sprites.background"
 
-canvas_width = 1536
-canvas_height = 864
+canvas_width = 1280
+canvas_height = 720
 
 local canvas
 canvas_offset_x = 0
 canvas_offset_y = 0
 scale = 1
 
-function normalize_vector(vector)
-    local length = math.sqrt(vector.x ^ 2 + vector.y ^ 2)
-    vector.x = vector.x / length
-    vector.y = vector.y / length
-end
+
 
 function love.load()
     canvas = love.graphics.newCanvas(canvas_width, canvas_height)
@@ -23,16 +21,19 @@ function love.load()
     love.graphics.setDefaultFilter("linear", "linear")
     player:load()
     objects:load()
+    background:load()
 end
 
 function love.update(dt)
     player:update(dt)
     objects:update(dt)
+    background:update(dt)
 end
 
 function love.draw()
     love.graphics.setCanvas(canvas)
     love.graphics.clear(0.1, 0.1, 0.1)
+    background:draw()
     player:draw()
     objects:draw()
     love.graphics.setCanvas()
