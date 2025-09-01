@@ -71,13 +71,6 @@ end
 function player:draw()
     love.graphics.draw(self.texture, self.position.x, self.position.y, self.rotation, 1, 1, self.texture:getWidth() / 2,
         self.texture:getHeight() / 2)
-
-    if player.previous_points ~= nil then
-        love.graphics.setColor(1, 0, 0, 0.5)
-        love.graphics.polygon("fill", self.previous_points[1].x, self.previous_points[1].y, self.previous_points[2].x,
-            self.previous_points[2].y, self.previous_points[3].x, self.previous_points[3].y)
-        love.graphics.setColor(1, 1, 1, 1)
-    end
 end
 
 function player:track_mouse()

@@ -56,6 +56,13 @@ function objects:update(dt)
     if player.previous_points ~= nil then
         self:check_collision_with_player()
     end
+
+    for i = #self.list, 1, -1 do
+        self:handle_collision(self.list[i])
+        if self.list[i].texture > 4 then
+            table.remove(self.list, i)
+        end
+    end
 end
 
 function objects:handle_dash(dt)
@@ -87,7 +94,15 @@ function objects:update_list()
             texture = love.math.random(4),
             x = love.math.random(canvas_width),
             y = love.math.random(canvas_height),
-            collided = false
+            destroyed = false,
+            scale_x = 1,
+            spring = {
+                rest_length = 1,
+                damping = 0.8,
+                velocity = 0.0,
+                force = 0,
+                k = 1,
+            }
         }
         table.insert(self.list, object)
     end
@@ -100,38 +115,43 @@ function objects:check_collision_with_player()
         local point2, previous_point2 = player.points[2], player.previous_points[2]
         local point3, previous_point3 = player.points[3], player.previous_points[3]
 
-        if not object.collided and length_of_vector({ x = point1.x - previous_point1.x, y = point1.y - previous_point1.y }) then
-            if line_and_circle_collision({ x1 = point1.x, x2 = previous_point1.x, y1 = point1.y, y2 = previous_point1.y },
-                    { cx = object.x + 50.5, cy = object.y + 50.5, radius = 50 }) then
-                object.collided = true
-            end
+        if line_and_circle_collision({ x1 = point1.x, x2 = previous_point1.x, y1 = point1.y, y2 = previous_point1.y },
+                { cx = object.x, cy = object.y, radius = 50 }) then
+            object.scale_x = 2
+            object.texture = object.texture + 1
         end
 
-        if not object.collided and length_of_vector({ x = point2.x - previous_point2.x, y = point2.y - previous_point2.y }) then
-            if line_and_circle_collision({ x1 = point2.x, x2 = previous_point2.x, y1 = point2.y, y2 = previous_point2.y },
-                    { cx = object.x + 50.5, cy = object.y + 50.5, radius = 50 }) then
-                object.collided = true
-            end
+        if line_and_circle_collision({ x1 = point2.x, x2 = previous_point2.x, y1 = point2.y, y2 = previous_point2.y },
+                { cx = object.x, cy = object.y, radius = 50 }) then
+            object.scale_x = 2
+            object.texture = object.texture + 1
         end
 
-        if not object.collided and length_of_vector({ x = point3.x - previous_point3.x, y = point3.y - previous_point3.y }) then
-            if line_and_circle_collision({ x1 = point3.x, x2 = previous_point3.x, y1 = point3.y, y2 = previous_point3.y },
-                    { cx = object.x + 50.5, cy = object.y + 50.5, radius = 50 }) then
-                object.collided = true
-            end
+        if line_and_circle_collision({ x1 = point3.x, x2 = previous_point3.x, y1 = point3.y, y2 = previous_point3.y },
+                { cx = object.x, cy = object.y, radius = 50 }) then
+            object.scale_x = 2
+            object.texture = object.texture + 1
         end
     end
+end
+
+function objects:handle_collision(object)
+    local spring = object.spring
+
+    local x = object.scale_x - spring.rest_length
+    spring.force = -spring.k * x / 4;
+    spring.velocity = spring.velocity + spring.force
+
+    object.scale_x = object.scale_x + spring.velocity
+
+    spring.velocity = spring.velocity * spring.damping
 end
 
 function objects:draw()
     for i = 1, #self.list do
         local object = self.list[i]
-        if object.collided then
-            love.graphics.setColor(0, 0, 0)
-            love.graphics.draw(self.textures[object.texture], object.x, object.y)
-            love.graphics.setColor(1, 1, 1)
-        else
-            love.graphics.draw(self.textures[object.texture], object.x, object.y)
-        end
+        local texture = self.textures[object.texture]
+        love.graphics.draw(texture, object.x, object.y, 0, object.scale_x, 1, texture:getWidth() / 2,
+            texture:getHeight() / 2)
     end
 end

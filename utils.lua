@@ -16,8 +16,8 @@ function length_of_vector(vector)
 end
 
 function line_and_circle_collision(line, circle)
-    if length_of_vector({ x = line.x1 - circle.cx, y = line.y1 - circle.cy }) <= circle.radius or
-        length_of_vector({ x = line.x2 - circle.cx, y = line.y2 - circle.cy }) <= circle.radius then
+    if (length_of_vector({ x = line.x1 - circle.cx, y = line.y1 - circle.cy }) <= circle.radius) or
+        (length_of_vector({ x = line.x2 - circle.cx, y = line.y2 - circle.cy }) <= circle.radius) then
         return true
     end
 
