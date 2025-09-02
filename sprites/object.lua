@@ -58,8 +58,18 @@ function objects:update(dt)
     end
 
     for i = #self.list, 1, -1 do
-        self:handle_collision(self.list[i])
-        if self.list[i].texture > 4 then
+        local object = self.list[i]
+        self:handle_collision(object)
+
+        if object.collided then
+            object.collision_timer = object.collision_timer + dt
+            if object.collision_timer > 0.25 then
+                object.collided = false
+                object.collision_timer = 0
+            end
+        end
+
+        if object.texture > 4 then
             table.remove(self.list, i)
         end
     end
@@ -94,6 +104,7 @@ function objects:update_list()
             texture = love.math.random(4),
             x = love.math.random(canvas_width),
             y = love.math.random(canvas_height),
+            collided = false,
             destroyed = false,
             scale_x = 1,
             spring = {
@@ -102,7 +113,8 @@ function objects:update_list()
                 velocity = 0.0,
                 force = 0,
                 k = 1,
-            }
+            },
+            collision_timer = 0
         }
         table.insert(self.list, object)
     end
@@ -111,26 +123,30 @@ end
 function objects:check_collision_with_player()
     for i = 1, #self.list do
         local object = self.list[i]
+
         local point1, previous_point1 = player.points[1], player.previous_points[1]
         local point2, previous_point2 = player.points[2], player.previous_points[2]
         local point3, previous_point3 = player.points[3], player.previous_points[3]
 
-        if line_and_circle_collision({ x1 = point1.x, x2 = previous_point1.x, y1 = point1.y, y2 = previous_point1.y },
+        if not object.collided and line_and_circle_collision({ x1 = point1.x, x2 = previous_point1.x, y1 = point1.y, y2 = previous_point1.y },
                 { cx = object.x, cy = object.y, radius = 50 }) then
             object.scale_x = 2
             object.texture = object.texture + 1
+            object.collided = true
         end
 
-        if line_and_circle_collision({ x1 = point2.x, x2 = previous_point2.x, y1 = point2.y, y2 = previous_point2.y },
+        if not object.collided and line_and_circle_collision({ x1 = point2.x, x2 = previous_point2.x, y1 = point2.y, y2 = previous_point2.y },
                 { cx = object.x, cy = object.y, radius = 50 }) then
             object.scale_x = 2
             object.texture = object.texture + 1
+            object.collided = true
         end
 
-        if line_and_circle_collision({ x1 = point3.x, x2 = previous_point3.x, y1 = point3.y, y2 = previous_point3.y },
+        if not object.collided and line_and_circle_collision({ x1 = point3.x, x2 = previous_point3.x, y1 = point3.y, y2 = previous_point3.y },
                 { cx = object.x, cy = object.y, radius = 50 }) then
             object.scale_x = 2
             object.texture = object.texture + 1
+            object.collided = true
         end
     end
 end

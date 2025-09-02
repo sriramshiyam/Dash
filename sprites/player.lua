@@ -18,7 +18,10 @@ end
 
 function player:update(dt)
     self:track_mouse()
-    self.rotation = math.atan2(self.mouse_y - self.position.y, self.mouse_x - self.position.x) + (math.pi / 2)
+
+    local radian = math.atan2(self.mouse_y - self.position.y, self.mouse_x - self.position.x)
+
+    self.rotation = radian + (math.pi / 2)
 
     local x = self.position.x - self.mouse_x
     local y = self.position.y - self.mouse_y
