@@ -63,13 +63,21 @@ function objects:update(dt)
 
         if object.collided then
             object.collision_timer = object.collision_timer + dt
-            if object.collision_timer > 0.25 then
+            if object.collision_timer > 0.05 then
                 object.collided = false
                 object.collision_timer = 0
             end
         end
 
         if object.texture > 4 then
+            object.destroyed = true
+        end
+
+        if object.destroyed then
+            object.destroy_timer = object.destroy_timer + dt
+        end
+
+        if object.destroy_timer > 1.5 then
             table.remove(self.list, i)
         end
     end
@@ -101,6 +109,7 @@ end
 function objects:update_list()
     for i = 1, 10 do
         local object = {
+            id = i,
             texture = love.math.random(4),
             x = love.math.random(canvas_width),
             y = love.math.random(canvas_height),
@@ -114,7 +123,8 @@ function objects:update_list()
                 force = 0,
                 k = 1,
             },
-            collision_timer = 0
+            collision_timer = 0,
+            destroy_timer = 0
         }
         table.insert(self.list, object)
     end
@@ -133,6 +143,7 @@ function objects:check_collision_with_player()
             object.scale_x = 2
             object.texture = object.texture + 1
             object.collided = true
+            hud:add_score(love.math.random(100, 300), object)
         end
 
         if not object.collided and line_and_circle_collision({ x1 = point2.x, x2 = previous_point2.x, y1 = point2.y, y2 = previous_point2.y },
@@ -140,6 +151,7 @@ function objects:check_collision_with_player()
             object.scale_x = 2
             object.texture = object.texture + 1
             object.collided = true
+            hud:add_score(love.math.random(100, 300), object)
         end
 
         if not object.collided and line_and_circle_collision({ x1 = point3.x, x2 = previous_point3.x, y1 = point3.y, y2 = previous_point3.y },
@@ -147,6 +159,7 @@ function objects:check_collision_with_player()
             object.scale_x = 2
             object.texture = object.texture + 1
             object.collided = true
+            hud:add_score(love.math.random(100, 300), object)
         end
     end
 end
@@ -166,8 +179,10 @@ end
 function objects:draw()
     for i = 1, #self.list do
         local object = self.list[i]
-        local texture = self.textures[object.texture]
-        love.graphics.draw(texture, object.x, object.y, 0, object.scale_x, 1, texture:getWidth() / 2,
-            texture:getHeight() / 2)
+        if not object.destroyed then
+            local texture = self.textures[object.texture]
+            love.graphics.draw(texture, object.x, object.y, 0, object.scale_x, 1, texture:getWidth() / 2,
+                texture:getHeight() / 2)
+        end
     end
 end

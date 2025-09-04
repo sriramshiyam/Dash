@@ -2,6 +2,9 @@ require "utils"
 require "sprites.player"
 require "sprites.object"
 require "sprites.background"
+require "hud"
+
+default_font = love.graphics.getFont()
 
 canvas_width = 1280
 canvas_height = 720
@@ -10,8 +13,6 @@ local canvas
 canvas_offset_x = 0
 canvas_offset_y = 0
 scale = 1
-
-
 
 function love.load()
     canvas = love.graphics.newCanvas(canvas_width, canvas_height)
@@ -22,12 +23,14 @@ function love.load()
     player:load()
     objects:load()
     background:load()
+    hud:load()
 end
 
 function love.update(dt)
     player:update(dt)
     objects:update(dt)
     background:update(dt)
+    hud:update(dt)
 end
 
 function love.draw()
@@ -36,6 +39,7 @@ function love.draw()
     background:draw()
     player:draw()
     objects:draw()
+    hud:draw()
     love.graphics.setCanvas()
     love.graphics.clear()
     love.graphics.draw(canvas, canvas_offset_x, canvas_offset_y, 0, scale, scale)
