@@ -138,7 +138,7 @@ function objects:check_collision_with_player()
         local point2, previous_point2 = player.points[2], player.previous_points[2]
         local point3, previous_point3 = player.points[3], player.previous_points[3]
 
-        if not object.collided and line_and_circle_collision({ x1 = point1.x, x2 = previous_point1.x, y1 = point1.y, y2 = previous_point1.y },
+        if not object.collided and not object.destroyed and line_and_circle_collision({ x1 = point1.x, x2 = previous_point1.x, y1 = point1.y, y2 = previous_point1.y },
                 { cx = object.x, cy = object.y, radius = 50 }) then
             object.scale_x = 2
             object.texture = object.texture + 1
@@ -146,7 +146,7 @@ function objects:check_collision_with_player()
             hud:add_score(love.math.random(100, 300), object)
         end
 
-        if not object.collided and line_and_circle_collision({ x1 = point2.x, x2 = previous_point2.x, y1 = point2.y, y2 = previous_point2.y },
+        if not object.collided and not object.destroyed and line_and_circle_collision({ x1 = point2.x, x2 = previous_point2.x, y1 = point2.y, y2 = previous_point2.y },
                 { cx = object.x, cy = object.y, radius = 50 }) then
             object.scale_x = 2
             object.texture = object.texture + 1
@@ -154,7 +154,7 @@ function objects:check_collision_with_player()
             hud:add_score(love.math.random(100, 300), object)
         end
 
-        if not object.collided and line_and_circle_collision({ x1 = point3.x, x2 = previous_point3.x, y1 = point3.y, y2 = previous_point3.y },
+        if not object.collided and not object.destroyed and line_and_circle_collision({ x1 = point3.x, x2 = previous_point3.x, y1 = point3.y, y2 = previous_point3.y },
                 { cx = object.x, cy = object.y, radius = 50 }) then
             object.scale_x = 2
             object.texture = object.texture + 1
